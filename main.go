@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -25,6 +26,13 @@ func contact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func wrapper(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Wrapper Plsssssssssssssssssss")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	var err error
 	homeTemplate, err = template.ParseFiles("views/home.gohtml")
@@ -39,5 +47,6 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", home)
 	r.HandleFunc("/contact", contact)
+	r.HandleFunc("/a", wrapper(contact))
 	http.ListenAndServe(":3000", r)
 }
